@@ -3,24 +3,62 @@
 ## Objectives
 - Deliver a single-page, ultra-minimal landing page with only: (1) centered company name, (2) fixed top-right toggle.
 - Implement two fully distinct global skins:
-  - **Skin A (Default):** “The Beyonet Picture Company” — cinematic dark palette, film grain overlay, mouse-follow spotlight, dramatic serif font.
+  - **Skin A (Default):** “The Beyonet Picture Company” — cinematic dark palette, film grain overlay, spotlight, dramatic serif font.
   - **Skin B:** “The Beyonet Media Company” — clean modern palette, particle-network canvas background, geometric sans-serif font.
 - Universal interactions: magnetic toggle hover, smooth skin crossfade transitions, subtle 3D tilt/parallax on centered text.
 - Frontend-only React app using Framer Motion + Canvas + CSS (no backend).
+- Ensure production-grade quality:
+  - Remove any platform branding/mentions.
+  - Strong performance and battery-aware behavior.
+  - Excellent touch + mobile responsiveness.
+  - Accessibility-first (ARIA, keyboard, reduced motion).
 
 ## Current Status (Progress Update)
 - **Phase 1 COMPLETE** (POC interactions validated and integrated).
 - **Phase 2 COMPLETE** (polished V1 app delivered).
-- Implemented and verified:
-  - Skin A: dark cinematic base + vignette, animated film grain overlay, mouse-follow spotlight, **Cormorant Garamond** title font, blur-to-focus entrance animation.
-  - Skin B: clean light base, interactive particle network canvas with mouse repulsion + subtle connections, subtle grid overlay, **Space Grotesk** title font, structured slide-in entrance animation.
-  - Magnetic toggle button with spring physics; fixed top-right placement.
-  - Subtle 3D tilt/parallax on the centered title reacting to pointer.
-  - Smooth crossfade transitions between skins (~700ms premium easing).
-  - Responsive behavior (mobile typography/layout adjustments).
-  - Accessibility: `aria-pressed`, `aria-label`, keyboard activation, visible focus ring.
-  - CSS custom property token system (`html[data-skin]`) for palette swapping.
-  - Required `data-testid` attributes present.
+- **Phase 3 COMPLETE** (performance hardening + touch optimization + mobile optimization).
+
+### Implemented and verified
+- Skin A (Picture):
+  - Dark cinematic base + vignette
+  - Animated film grain overlay (adaptive for touch)
+  - Spotlight effect (mouse-follow on hover devices; ambient drift on touch)
+  - **Cormorant Garamond** title font
+  - Blur-to-focus entrance animation (reduced motion safe)
+- Skin B (Media):
+  - Clean light base
+  - Canvas particle network with subtle connections
+  - Adaptive particle count (**~55 max on mobile**, **~150 on desktop**) and mobile-tuned link distance
+  - Grid overlay tuned (reduced opacity on mobile)
+  - **Space Grotesk** title font
+  - Structured slide-in entrance animation (reduced motion safe)
+- Universal:
+  - Magnetic toggle button with spring physics (disabled on touch)
+  - Title 3D tilt/parallax reacting to pointer (disabled on touch and reduced motion)
+  - Smooth crossfade transitions between skins (~700ms premium easing)
+  - CSS custom property token system (`html[data-skin]`) for palette swapping
+  - Email added under both titles: **hello@bayon.et** (small, matching the skin’s font)
+- Branding cleanup:
+  - Removed “Made with Emergent” badge and removed Emergent script + mentions.
+- Performance hardening:
+  - Page Visibility handling: animation loops pause when tab is hidden
+  - DPR capped at **2x** to reduce GPU load
+  - Media canvas does no drawing work when inactive; clears and returns
+- Touch + mobile:
+  - Device capability detection via `useDeviceCapabilities`
+  - Touch-first toggle UX (min 44px target, tap highlight removed, `touch-action: manipulation`)
+  - Ambient spotlight drift on touch for Skin A
+  - Mouse repulsion disabled on touch for particles
+  - Comprehensive responsive styling across five breakpoints + landscape
+  - iOS safe areas supported with `env(safe-area-inset-*)`
+
+### Testing (completed)
+- Automated frontend testing: **100% pass (17/17)** across:
+  - Desktop
+  - Mobile (390×844)
+  - Tiny screen (320×568)
+  - Landscape mobile (844×390)
+- Confirmed: no forbidden text (“Coming Soon”, “Under Construction”), no Emergent mentions, no badge.
 
 ## Implementation Steps
 
@@ -75,28 +113,42 @@ Goal: integrate POC pieces into a polished, minimal UI with two complete skins.
 - One reported issue: DOM query timing artifact during `AnimatePresence` transition.
   - Confirmed not a functional defect; resolved by waiting for transition completion.
 
-### Phase 3: Refinement + performance hardening (OPTIONAL / ON-DEMAND)
-Goal: further increase “agency-grade” feel and robustness if requested.
+### Phase 3: Refinement + performance hardening (COMPLETED)
+Goal: increase “agency-grade” feel, robustness, and mobile/touch excellence.
 
-**User stories (to implement if requested)**
-1. As a user, animations remain smooth even after resizing or extended idle time.
-2. As a user, the page works on trackpads and touch devices without broken visuals.
-3. As a user, I don’t see text jitter or subpixel artifacts during tilt.
-4. As a user, the toggle remains usable and readable across skins.
-5. As a user, background effects feel premium but never overpower legibility.
+**User stories (delivered)**
+1. As a user, I don’t see platform badges/branding; the page feels fully bespoke.
+2. As a user, animations remain smooth and battery-aware (especially on mobile).
+3. As a user, the experience is strong on touch devices even without a cursor.
+4. As a user, reduced-motion preferences are respected without breaking the design.
+5. As a user, the page remains minimal and readable across all mobile sizes and orientations.
 
-**Refinement steps (backlog)**
+**What was implemented**
+- Branding cleanup
+  - Removed “Made with Emergent” badge and removed Emergent script/mentions.
+- Spotlight refinement
+  - Made spotlight beam more defined/harder with sharper falloff (4-stop radial gradient).
+  - Added mobile-specific softer spotlight variant.
+- Email addition
+  - Added **hello@bayon.et** under both titles; small and matching each skin’s font.
 - Performance
-  - Pause/low-power mode when tab hidden (Page Visibility API).
-  - Adaptive particle count by viewport area + optional FPS cap on low-end devices.
-  - Ensure canvases do no work when their skin is inactive (beyond current clearing behavior).
-- Responsiveness
-  - Touch-first behavior improvements (e.g., ambient spotlight drift, reduced repulsion).
-  - `prefers-reduced-motion` enhancements: disable tilt/magnet, reduce grain animation intensity.
-- Visual polish
-  - Further tune spotlight falloff and easing for even more “cinematic” feel.
-  - Improve particle alpha falloff and connection aesthetics.
-  - Optional multi-layer grain realism (without heavy filters).
+  - Page Visibility API: animation work pauses when tab is hidden.
+  - DPR capped at **2x** via `useDeviceCapabilities`.
+  - Adaptive particles: lower count on mobile; shorter link distance on mobile.
+- Touch optimization
+  - `useDeviceCapabilities` detects: hover, touch, reduced motion, visibility, DPR cap, mobile.
+  - Ambient spotlight drift on touch (organic orbit) for Skin A.
+  - Mouse-only behaviors disabled on touch: magnetic toggle, tilt, particle repulsion.
+  - Improved tap UX: min 44px touch target, `-webkit-tap-highlight-color: transparent`, `touch-action: manipulation`.
+- Mobile optimization
+  - Responsive styling across 5 breakpoints: 1024px, 640px, 380px, landscape, hover:none.
+  - Proper text wrapping on mobile (`white-space: normal`).
+  - Smaller email and toggle sizing per breakpoint.
+  - iOS safe area padding.
+  - Reduced grid overlay and simplified grain animation on touch.
+
+**Testing (completed)**
+- Automated frontend testing: **100% pass (17/17)**.
 
 ### Phase 4: Optional enhancements (only if requested)
 **User stories (optional)**
@@ -112,14 +164,14 @@ Goal: further increase “agency-grade” feel and robustness if requested.
 - Lighthouse pass (basic): ensure minimal main-thread overhead, no layout shifts.
 
 ## Next Actions
-1. **No required next steps** — Phase 1 & 2 are complete and shipped.
-2. If requested, proceed with Phase 3 performance hardening (visibility pause, adaptive particles, reduced-motion tuning).
-3. If requested, proceed with Phase 4 (persisted skin + shareable URL).
+1. **No required next steps** — Phases 1–3 are complete and shipped.
+2. If requested, proceed with Phase 4 (persisted skin + shareable URL + keyboard shortcut).
+3. If requested, do a Lighthouse/perf pass on a throttled profile and tune particle count thresholds further.
 
 ## Success Criteria
-- Single page contains only the centered company name and the top-right toggle.
+- Single page contains only the centered company name and the top-right toggle (+ email under title).
 - Toggle fully switches between two distinct skins (fonts, palette, background behavior).
-- Magnetic toggle + 3D title tilt feel responsive and premium.
-- Skin A shows film grain + mouse-follow spotlight; Skin B shows interactive particle network.
+- Magnetic toggle + 3D title tilt feel responsive and premium on hover devices; gracefully disabled on touch.
+- Skin A shows film grain + spotlight (mouse-follow or ambient drift); Skin B shows particle network.
 - Smooth crossfade transitions with no flicker.
-- Works across resize/high-DPI; responsive on mobile; accessible with keyboard + ARIA.
+- Works across resize/high-DPI; responsive on mobile (including tiny + landscape); accessible with keyboard + ARIA; respects reduced motion.
