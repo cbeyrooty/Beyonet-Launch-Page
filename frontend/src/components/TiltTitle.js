@@ -102,7 +102,7 @@ const TiltTitle = ({ skin, mouseX, mouseY, capabilities }) => {
               className="title-email title-email-picture"
               data-testid="title-email"
             >
-              hello@bayon.et
+              hello@beyon.et
             </p>
           </motion.div>
         ) : (
@@ -126,7 +126,7 @@ const TiltTitle = ({ skin, mouseX, mouseY, capabilities }) => {
               className="title-email title-email-media"
               data-testid="title-email"
             >
-              hello@bayon.et
+              hello@beyon.et
             </p>
           </motion.div>
         )}
