@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { motion, useSpring } from 'framer-motion';
 
-const BackgroundPicture = ({ active, mouseX, mouseY }) => {
+const BackgroundPicture = ({ active, mouseX, mouseY, capabilities }) => {
   const spotlightRef = useRef(null);
   const grainRef = useRef(null);
+  const driftFrameRef = useRef(null);
 
   // Smooth spring for spotlight position (creates premium lag effect)
   const smoothX = useSpring(mouseX, { stiffness: 80, damping: 30 });
@@ -31,8 +32,10 @@ const BackgroundPicture = ({ active, mouseX, mouseY }) => {
     }
   }, []);
 
-  // Track smoothed mouse position for spotlight
+  // Desktop: track smoothed mouse position for spotlight
   useEffect(() => {
+    if (!capabilities.canHover || !capabilities.isVisible) return;
+
     const update = () => {
       if (spotlightRef.current) {
         spotlightRef.current.style.setProperty('--mx', `${smoothX.get()}px`);
@@ -45,7 +48,40 @@ const BackgroundPicture = ({ active, mouseX, mouseY }) => {
       unsubX();
       unsubY();
     };
-  }, [smoothX, smoothY]);
+  }, [smoothX, smoothY, capabilities.canHover, capabilities.isVisible]);
+
+  // Touch devices: ambient spotlight drift (slow Lissajous orbit)
+  useEffect(() => {
+    if (capabilities.canHover || !active) return;
+
+    let angle = 0;
+    const drift = () => {
+      if (!capabilities.isVisible) {
+        driftFrameRef.current = requestAnimationFrame(drift);
+        return;
+      }
+
+      angle += 0.004;
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      const rx = Math.min(cx, 300) * 0.3;
+      const ry = Math.min(cy, 200) * 0.25;
+      const x = cx + Math.cos(angle) * rx;
+      const y = cy + Math.sin(angle * 0.7) * ry;
+
+      if (spotlightRef.current) {
+        spotlightRef.current.style.setProperty('--mx', `${x}px`);
+        spotlightRef.current.style.setProperty('--my', `${y}px`);
+      }
+
+      driftFrameRef.current = requestAnimationFrame(drift);
+    };
+
+    drift();
+    return () => {
+      if (driftFrameRef.current) cancelAnimationFrame(driftFrameRef.current);
+    };
+  }, [capabilities.canHover, capabilities.isVisible, active]);
 
   return (
     <motion.div

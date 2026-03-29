@@ -1,7 +1,12 @@
 import { useRef, useEffect } from 'react';
-import { motion, useTransform, useSpring, AnimatePresence } from 'framer-motion';
+import {
+  motion,
+  useTransform,
+  useSpring,
+  AnimatePresence,
+} from 'framer-motion';
 
-const TiltTitle = ({ skin, mouseX, mouseY }) => {
+const TiltTitle = ({ skin, mouseX, mouseY, capabilities }) => {
   const sizeRef = useRef({ w: window.innerWidth, h: window.innerHeight });
 
   useEffect(() => {
@@ -16,81 +21,114 @@ const TiltTitle = ({ skin, mouseX, mouseY }) => {
   const normX = useTransform(mouseX, (val) => val / sizeRef.current.w - 0.5);
   const normY = useTransform(mouseY, (val) => val / sizeRef.current.h - 0.5);
 
-  // 3D tilt: max +/-6 degrees, with smooth spring
-  const rawRotateY = useTransform(normX, [-0.5, 0.5], [-6, 6]);
-  const rawRotateX = useTransform(normY, [-0.5, 0.5], [6, -6]);
+  // 3D tilt: max +/-6 degrees on desktop, 0 on touch
+  const maxTilt = capabilities.canHover && !capabilities.reducedMotion ? 6 : 0;
+  const rawRotateY = useTransform(normX, [-0.5, 0.5], [-maxTilt, maxTilt]);
+  const rawRotateX = useTransform(normY, [-0.5, 0.5], [maxTilt, -maxTilt]);
   const rotateY = useSpring(rawRotateY, { stiffness: 100, damping: 30 });
   const rotateX = useSpring(rawRotateX, { stiffness: 100, damping: 30 });
 
   // Skin A: cinematic blur-to-focus entrance
   const pictureVariants = {
-    initial: { opacity: 0, filter: 'blur(12px)' },
-    animate: {
-      opacity: 1,
-      filter: 'blur(0px)',
-      transition: { duration: 1, ease: [0.2, 0.8, 0.2, 1] },
-    },
-    exit: {
-      opacity: 0,
-      filter: 'blur(8px)',
-      transition: { duration: 0.4, ease: [0.2, 0.8, 0.2, 1] },
-    },
+    initial: capabilities.reducedMotion
+      ? { opacity: 0 }
+      : { opacity: 0, filter: 'blur(12px)' },
+    animate: capabilities.reducedMotion
+      ? { opacity: 1, transition: { duration: 0.4 } }
+      : {
+          opacity: 1,
+          filter: 'blur(0px)',
+          transition: { duration: 1, ease: [0.2, 0.8, 0.2, 1] },
+        },
+    exit: capabilities.reducedMotion
+      ? { opacity: 0, transition: { duration: 0.2 } }
+      : {
+          opacity: 0,
+          filter: 'blur(8px)',
+          transition: { duration: 0.4, ease: [0.2, 0.8, 0.2, 1] },
+        },
   };
 
   // Skin B: sharp structured slide-in
   const mediaVariants = {
-    initial: { opacity: 0, y: 30 },
-    animate: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.7, ease: [0.2, 0.8, 0.2, 1] },
-    },
-    exit: {
-      opacity: 0,
-      y: -20,
-      transition: { duration: 0.35, ease: [0.2, 0.8, 0.2, 1] },
-    },
+    initial: capabilities.reducedMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 30 },
+    animate: capabilities.reducedMotion
+      ? { opacity: 1, transition: { duration: 0.4 } }
+      : {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.7, ease: [0.2, 0.8, 0.2, 1] },
+        },
+    exit: capabilities.reducedMotion
+      ? { opacity: 0, transition: { duration: 0.2 } }
+      : {
+          opacity: 0,
+          y: -20,
+          transition: { duration: 0.35, ease: [0.2, 0.8, 0.2, 1] },
+        },
   };
 
   return (
     <motion.div
       data-testid="tilt-title-wrapper"
       className="tilt-wrapper"
-      style={{
-        rotateX,
-        rotateY,
-        transformPerspective: 1200,
-      }}
+      style={
+        capabilities.canHover && !capabilities.reducedMotion
+          ? { rotateX, rotateY, transformPerspective: 1200 }
+          : undefined
+      }
     >
       <AnimatePresence mode="wait">
         {skin === 'picture' ? (
-          <motion.h1
+          <motion.div
             key="picture-title"
-            data-testid="company-name-heading"
-            className="title title-picture"
+            className="title-block"
             variants={pictureVariants}
             initial="initial"
             animate="animate"
             exit="exit"
           >
-            The Beyonet
-            <br />
-            Picture Company
-          </motion.h1>
+            <h1
+              data-testid="company-name-heading"
+              className="title title-picture"
+            >
+              The Beyonet
+              <br />
+              Picture Company
+            </h1>
+            <p
+              className="title-email title-email-picture"
+              data-testid="title-email"
+            >
+              hello@bayon.et
+            </p>
+          </motion.div>
         ) : (
-          <motion.h1
+          <motion.div
             key="media-title"
-            data-testid="company-name-heading"
-            className="title title-media"
+            className="title-block"
             variants={mediaVariants}
             initial="initial"
             animate="animate"
             exit="exit"
           >
-            The Beyonet
-            <br />
-            Media Company
-          </motion.h1>
+            <h1
+              data-testid="company-name-heading"
+              className="title title-media"
+            >
+              The Beyonet
+              <br />
+              Media Company
+            </h1>
+            <p
+              className="title-email title-email-media"
+              data-testid="title-email"
+            >
+              hello@bayon.et
+            </p>
+          </motion.div>
         )}
       </AnimatePresence>
     </motion.div>

@@ -1,34 +1,30 @@
 [
   {
-    "content": "Phase 1: Set up dependencies (framer-motion, fonts)",
+    "content": "Remove 'Made with Emergent' badge and all Emergent mentions",
     "status": "completed"
   },
   {
-    "content": "Phase 1: Build POC - interactive backgrounds, magnetic toggle, 3D tilt",
+    "content": "Make spotlight effect harder/more defined",
     "status": "completed"
   },
   {
-    "content": "Phase 1: Validate POC smoothness and fix issues",
+    "content": "Add email hello@bayon.et under both titles",
     "status": "completed"
   },
   {
-    "content": "Phase 2: Call design agent for visual guidelines",
-    "status": "completed"
+    "content": "Phase 3: Performance hardening (Page Visibility, adaptive particles, reduced motion)",
+    "status": "in_progress"
   },
   {
-    "content": "Phase 2: Full app implementation with both skins",
-    "status": "completed"
+    "content": "Phase 3: Touch device optimization",
+    "status": "pending"
   },
   {
-    "content": "Phase 2: All user stories covered in Development and testing",
-    "status": "completed"
+    "content": "Phase 3: Thorough mobile optimization",
+    "status": "pending"
   },
   {
-    "content": "Phase 2: End to End Testing using Testing Agent",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 3: Refinement + performance hardening",
+    "content": "Phase 3: End to End Testing",
     "status": "pending"
   }
 ]

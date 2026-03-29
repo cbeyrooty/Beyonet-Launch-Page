@@ -1,7 +1,7 @@
 import { useRef, useCallback } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
-const MagneticToggle = ({ skin, onToggle }) => {
+const MagneticToggle = ({ skin, onToggle, capabilities }) => {
   const buttonRef = useRef(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -10,6 +10,9 @@ const MagneticToggle = ({ skin, onToggle }) => {
 
   const handleMouseMove = useCallback(
     (e) => {
+      // Disable magnetic effect on touch devices
+      if (!capabilities.canHover) return;
+
       const rect = buttonRef.current?.getBoundingClientRect();
       if (!rect) return;
       const centerX = rect.left + rect.width / 2;
@@ -17,13 +20,12 @@ const MagneticToggle = ({ skin, onToggle }) => {
       const dx = e.clientX - centerX;
       const dy = e.clientY - centerY;
 
-      // Proportional pull clamped to max offset
       const maxOffset = 14;
       const strength = 0.18;
       x.set(Math.max(-maxOffset, Math.min(maxOffset, dx * strength)));
       y.set(Math.max(-maxOffset, Math.min(maxOffset, dy * strength)));
     },
-    [x, y]
+    [x, y, capabilities.canHover]
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -43,9 +45,11 @@ const MagneticToggle = ({ skin, onToggle }) => {
         data-testid="skin-toggle-button"
         className="toggle-button"
         onClick={onToggle}
-        style={{ x: springX, y: springY }}
+        style={
+          capabilities.canHover ? { x: springX, y: springY } : undefined
+        }
         whileTap={{ scale: 0.96 }}
-        whileHover={{ scale: 1.03 }}
+        whileHover={capabilities.canHover ? { scale: 1.03 } : undefined}
         aria-pressed={skin === 'media'}
         aria-label={
           skin === 'picture'

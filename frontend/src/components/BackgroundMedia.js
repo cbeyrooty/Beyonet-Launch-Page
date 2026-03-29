@@ -1,30 +1,38 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
-const BackgroundMedia = ({ active, mouseX, mouseY }) => {
+const BackgroundMedia = ({ active, mouseX, mouseY, capabilities }) => {
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
   const particlesRef = useRef([]);
   const activeRef = useRef(active);
+  const visibleRef = useRef(capabilities.isVisible);
 
   useEffect(() => {
     activeRef.current = active;
   }, [active]);
 
-  const initParticles = useCallback((width, height) => {
-    const isMobile = width < 768;
-    const count = isMobile
-      ? Math.min(Math.floor((width * height) / 14000), 70)
-      : Math.min(Math.floor((width * height) / 9000), 150);
+  useEffect(() => {
+    visibleRef.current = capabilities.isVisible;
+  }, [capabilities.isVisible]);
 
-    particlesRef.current = Array.from({ length: count }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.35,
-      vy: (Math.random() - 0.5) * 0.35,
-      radius: Math.random() * 1.4 + 0.5,
-    }));
-  }, []);
+  const initParticles = useCallback(
+    (width, height) => {
+      const isMobile = capabilities.isMobile;
+      const count = isMobile
+        ? Math.min(Math.floor((width * height) / 16000), 55)
+        : Math.min(Math.floor((width * height) / 9000), 150);
+
+      particlesRef.current = Array.from({ length: count }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        radius: Math.random() * 1.4 + 0.5,
+      }));
+    },
+    [capabilities.isMobile]
+  );
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -33,7 +41,7 @@ const BackgroundMedia = ({ active, mouseX, mouseY }) => {
     const ctx = canvas.getContext('2d');
 
     const resize = () => {
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = capabilities.dpr;
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       canvas.style.width = `${window.innerWidth}px`;
@@ -45,46 +53,48 @@ const BackgroundMedia = ({ active, mouseX, mouseY }) => {
     resize();
     window.addEventListener('resize', resize);
 
+    const canHover = capabilities.canHover;
+    const linkDist = capabilities.isMobile ? 80 : 100;
+    const repelDist = 130;
+
     const animate = () => {
       animFrameRef.current = requestAnimationFrame(animate);
+
+      // Fully pause when tab is hidden
+      if (!visibleRef.current) return;
 
       const w = window.innerWidth;
       const h = window.innerHeight;
       const particles = particlesRef.current;
-      const mx = mouseX.get();
-      const my = mouseY.get();
 
-      // Always update physics (so particles don't freeze)
-      const linkDist = 100;
-      const repelDist = 130;
+      // Update physics
+      if (canHover) {
+        const mx = mouseX.get();
+        const my = mouseY.get();
+        for (const p of particles) {
+          const dx = p.x - mx;
+          const dy = p.y - my;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < repelDist && dist > 0) {
+            const force = ((repelDist - dist) / repelDist) * 0.5;
+            p.vx += (dx / dist) * force;
+            p.vy += (dy / dist) * force;
+          }
+        }
+      }
 
       for (const p of particles) {
-        // Mouse repulsion
-        const dx = p.x - mx;
-        const dy = p.y - my;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < repelDist && dist > 0) {
-          const force = ((repelDist - dist) / repelDist) * 0.5;
-          p.vx += (dx / dist) * force;
-          p.vy += (dy / dist) * force;
-        }
-
-        // Damping
         p.vx *= 0.985;
         p.vy *= 0.985;
-
-        // Move
         p.x += p.vx;
         p.y += p.vy;
-
-        // Wrap around edges
         if (p.x < -10) p.x = w + 10;
         if (p.x > w + 10) p.x = -10;
         if (p.y < -10) p.y = h + 10;
         if (p.y > h + 10) p.y = -10;
       }
 
-      // Only draw when active (save GPU)
+      // Only draw when active
       if (!activeRef.current) {
         ctx.clearRect(0, 0, w, h);
         return;
@@ -125,7 +135,7 @@ const BackgroundMedia = ({ active, mouseX, mouseY }) => {
       window.removeEventListener('resize', resize);
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [mouseX, mouseY, initParticles]);
+  }, [mouseX, mouseY, initParticles, capabilities.dpr, capabilities.canHover, capabilities.isMobile]);
 
   return (
     <motion.div
