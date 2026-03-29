@@ -1,70 +1,89 @@
-# Getting Started with Create React App
+# Beyonet — Dual-Skin Landing Page
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+An ultra-minimalist, single-page landing page with two fully distinct visual identities, toggled by a single button.
 
-## Available Scripts
+**Live preview:** _[your-deployment-url]_
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Skins
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+| Skin A — Picture Company | Skin B — Media Company |
+|:---|:---|
+| Cinematic dark palette | Clean modern light palette |
+| Film-grain overlay + spotlight following cursor | Particle-network canvas with mouse repulsion |
+| Cormorant Garamond serif | Space Grotesk geometric sans-serif |
+| Blur-to-focus entrance animation | Structured slide-in animation |
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Features
 
-### `npm test`
+- **Magnetic toggle** — the button subtly pulls toward your cursor, with spring physics.
+- **3D parallax tilt** — the centred title reacts to mouse position via `rotateX`/`rotateY`.
+- **Smooth crossfade** — background colour, effects, and typography transition over 700 ms with premium easing.
+- **Touch-aware** — on devices without hover, the spotlight drifts autonomously and heavy interactions are disabled to save battery.
+- **Reduced-motion safe** — animations respect `prefers-reduced-motion`.
+- **Responsive** — five CSS breakpoints covering 320 px → 4K, plus landscape and iOS safe-area handling.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Tech Stack
 
-### `npm run build`
+| Layer | Tool |
+|:---|:---|
+| UI framework | React 19 (CRA + Craco) |
+| Animation | Framer Motion 12 |
+| Backgrounds | Canvas 2D (particles), CSS radial-gradient (spotlight), generated noise texture (grain) |
+| Styling | Tailwind CSS 3 (base reset only) + vanilla CSS custom properties |
+| Fonts | Google Fonts — Cormorant Garamond, Space Grotesk |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Project Structure
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+src/
+├── components/
+│   ├── BackgroundMedia.js      # Particle-network canvas (Skin B)
+│   ├── BackgroundPicture.js    # Film grain + spotlight (Skin A)
+│   ├── MagneticToggle.js       # Spring-physics toggle button
+│   └── TiltTitle.js            # 3D-tilting title with AnimatePresence
+├── hooks/
+│   └── useDeviceCapabilities.js  # Detects hover, touch, visibility, DPR, motion prefs
+├── App.js          # Root — skin state, pointer tracking, component composition
+├── App.css         # All component styles, responsive breakpoints, animations
+├── index.css       # Tailwind base + skin CSS custom-property tokens
+└── index.js        # React DOM entry point
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Getting Started
 
-### `npm run eject`
+```bash
+# Install dependencies
+yarn install
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Start dev server (http://localhost:3000)
+yarn start
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# Production build
+yarn build
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Skin Token System
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+The global palette is swapped by setting `data-skin="picture"` or `data-skin="media"` on the `<html>` element. All colours are driven by CSS custom properties defined in `index.css`:
 
-## Learn More
+```css
+html[data-skin='picture'] {
+  --bg: #070708;
+  --fg: #F2F2F0;
+  /* … */
+}
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+html[data-skin='media'] {
+  --bg: #FAFAF8;
+  --fg: #0B0C0E;
+  /* … */
+}
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Components read these tokens via `var(--bg)`, `var(--fg)`, etc., so adding a third skin is as simple as adding another `html[data-skin='…']` block.
 
-### Code Splitting
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Private — all rights reserved.

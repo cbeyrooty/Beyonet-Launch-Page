@@ -1,30 +1,42 @@
 [
   {
-    "content": "Remove 'Made with Emergent' badge and all Emergent mentions",
+    "content": "Audit all files: remove dead code, unused imports, leftover comments",
     "status": "completed"
   },
   {
-    "content": "Make spotlight effect harder/more defined",
+    "content": "Clean up index.html: remove all Emergent artifacts, scripts, comments",
     "status": "completed"
   },
   {
-    "content": "Add email hello@bayon.et under both titles",
+    "content": "Clean up package.json: name, description, remove unused deps",
     "status": "completed"
   },
   {
-    "content": "Phase 3: Performance hardening (Page Visibility, adaptive particles, reduced motion)",
+    "content": "Clean up index.css: remove unused shadcn/tailwind bloat",
     "status": "completed"
   },
   {
-    "content": "Phase 3: Touch device optimization",
+    "content": "Review & polish all component files for consistency",
     "status": "completed"
   },
   {
-    "content": "Phase 3: Thorough mobile optimization",
+    "content": "Create .env.example for GitHub (no secrets)",
     "status": "completed"
   },
   {
-    "content": "Phase 3: End to End Testing",
+    "content": "Ensure .gitignore is comprehensive",
+    "status": "completed"
+  },
+  {
+    "content": "Create proper README.md",
+    "status": "completed"
+  },
+  {
+    "content": "Remove platform artifacts (test_reports, plan.md, design_guidelines, memory)",
+    "status": "completed"
+  },
+  {
+    "content": "Final lint + build verification",
     "status": "completed"
   }
 ]
