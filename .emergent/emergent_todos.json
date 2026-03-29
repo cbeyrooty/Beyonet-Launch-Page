@@ -5,11 +5,11 @@
   },
   {
     "content": "Phase 1: Build POC - interactive backgrounds, magnetic toggle, 3D tilt",
-    "status": "in_progress"
+    "status": "completed"
   },
   {
     "content": "Phase 1: Validate POC smoothness and fix issues",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 2: Call design agent for visual guidelines",
@@ -17,15 +17,15 @@
   },
   {
     "content": "Phase 2: Full app implementation with both skins",
-    "status": "in_progress"
+    "status": "completed"
   },
   {
     "content": "Phase 2: All user stories covered in Development and testing",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 2: End to End Testing using Testing Agent",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 3: Refinement + performance hardening",
