@@ -1,52 +1,46 @@
-import { useEffect } from "react";
-import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import { useState, useEffect, useCallback } from 'react';
+import { useMotionValue } from 'framer-motion';
+import '@/App.css';
+import BackgroundPicture from '@/components/BackgroundPicture';
+import BackgroundMedia from '@/components/BackgroundMedia';
+import MagneticToggle from '@/components/MagneticToggle';
+import TiltTitle from '@/components/TiltTitle';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+function App() {
+  const [skin, setSkin] = useState('picture');
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
+  // Set data-skin attribute on html element for CSS variable swapping
   useEffect(() => {
-    helloWorldApi();
+    document.documentElement.dataset.skin = skin;
+  }, [skin]);
+
+  // Global pointer tracking — uses motion values (no re-renders)
+  useEffect(() => {
+    const handlePointerMove = (e) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+    window.addEventListener('pointermove', handlePointerMove);
+    return () => window.removeEventListener('pointermove', handlePointerMove);
+  }, [mouseX, mouseY]);
+
+  const toggleSkin = useCallback(() => {
+    setSkin((prev) => (prev === 'picture' ? 'media' : 'picture'));
   }, []);
 
   return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+    <div className="landing-page" data-testid="landing-page">
+      {/* Background effect layers — both always mounted for crossfade */}
+      <BackgroundPicture active={skin === 'picture'} mouseX={mouseX} mouseY={mouseY} />
+      <BackgroundMedia active={skin === 'media'} mouseX={mouseX} mouseY={mouseY} />
 
-function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      {/* Central title with 3D parallax tilt */}
+      <TiltTitle skin={skin} mouseX={mouseX} mouseY={mouseY} />
+
+      {/* Fixed magnetic toggle button */}
+      <MagneticToggle skin={skin} onToggle={toggleSkin} />
     </div>
   );
 }

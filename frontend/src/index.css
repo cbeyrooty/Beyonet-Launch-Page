@@ -113,3 +113,37 @@ code {
         border-bottom-color: inherit;
     }
 }
+
+
+/* ============================================
+   BEYONET SKIN TOKEN SYSTEM
+   ============================================ */
+html[data-skin='picture'] {
+  --bg: #070708;
+  --bg-2: #0B0C0E;
+  --fg: #F2F2F0;
+  --fg-muted: rgba(242,242,240,0.72);
+  --stroke: rgba(255,255,255,0.10);
+  --stroke-2: rgba(255,255,255,0.16);
+  --toggle-bg: rgba(255,255,255,0.06);
+  --toggle-fg: #F2F2F0;
+  --toggle-border: rgba(255,255,255,0.14);
+}
+
+html[data-skin='media'] {
+  --bg: #FAFAF8;
+  --bg-2: #FFFFFF;
+  --fg: #0B0C0E;
+  --fg-muted: rgba(11,12,14,0.62);
+  --stroke: rgba(11,12,14,0.10);
+  --stroke-2: rgba(11,12,14,0.16);
+  --toggle-bg: rgba(11,12,14,0.04);
+  --toggle-fg: #0B0C0E;
+  --toggle-border: rgba(11,12,14,0.14);
+}
+
+body {
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
